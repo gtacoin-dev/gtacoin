@@ -1,0 +1,6 @@
+usr/local/bin/gtacoin-qt usr/bin
+share/pixmaps/gtacoin32.xpm usr/share/pixmaps
+share/pixmaps/gtacoin16.xpm usr/share/pixmaps
+share/pixmaps/gtacoin128.png usr/share/pixmaps
+debian/gtacoin-qt.desktop usr/share/applications
+debian/gtacoin-qt.protocol usr/share/kde4/services/

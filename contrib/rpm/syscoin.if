@@ -1,0 +1,157 @@
+
+## <summary>policy for gtacoin</summary>
+
+
+########################################
+## <summary>
+##	Transition to gtacoin.
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+#
+interface(`gtacoin_domtrans',`
+	gen_require(`
+		type gtacoin_t, gtacoin_exec_t;
+	')
+
+	corecmd_search_bin($1)
+	domtrans_pattern($1, gtacoin_exec_t, gtacoin_t)
+')
+
+
+########################################
+## <summary>
+##	Execute gtacoin server in the gtacoin domain.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`gtacoin_initrc_domtrans',`
+	gen_require(`
+		type gtacoin_initrc_exec_t;
+	')
+
+	init_labeled_script_domtrans($1, gtacoin_initrc_exec_t)
+')
+
+
+########################################
+## <summary>
+##	Search gtacoin lib directories.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`gtacoin_search_lib',`
+	gen_require(`
+		type gtacoin_var_lib_t;
+	')
+
+	allow $1 gtacoin_var_lib_t:dir search_dir_perms;
+	files_search_var_lib($1)
+')
+
+########################################
+## <summary>
+##	Read gtacoin lib files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`gtacoin_read_lib_files',`
+	gen_require(`
+		type gtacoin_var_lib_t;
+	')
+
+	files_search_var_lib($1)
+	read_files_pattern($1, gtacoin_var_lib_t, gtacoin_var_lib_t)
+')
+
+########################################
+## <summary>
+##	Manage gtacoin lib files.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`gtacoin_manage_lib_files',`
+	gen_require(`
+		type gtacoin_var_lib_t;
+	')
+
+	files_search_var_lib($1)
+	manage_files_pattern($1, gtacoin_var_lib_t, gtacoin_var_lib_t)
+')
+
+########################################
+## <summary>
+##	Manage gtacoin lib directories.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`gtacoin_manage_lib_dirs',`
+	gen_require(`
+		type gtacoin_var_lib_t;
+	')
+
+	files_search_var_lib($1)
+	manage_dirs_pattern($1, gtacoin_var_lib_t, gtacoin_var_lib_t)
+')
+
+
+########################################
+## <summary>
+##	All of the rules required to administrate
+##	an gtacoin environment
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+## <param name="role">
+##	<summary>
+##	Role allowed access.
+##	</summary>
+## </param>
+## <rolecap/>
+#
+interface(`gtacoin_admin',`
+	gen_require(`
+		type gtacoin_t;
+		type gtacoin_initrc_exec_t;
+		type gtacoin_var_lib_t;
+	')
+
+	allow $1 gtacoin_t:process { ptrace signal_perms };
+	ps_process_pattern($1, gtacoin_t)
+
+	gtacoin_initrc_domtrans($1)
+	domain_system_change_exemption($1)
+	role_transition $2 gtacoin_initrc_exec_t system_r;
+	allow $2 system_r;
+
+	files_search_var_lib($1)
+	admin_pattern($1, gtacoin_var_lib_t)
+
+')
+

@@ -1,0 +1,92 @@
+#!/sbin/runscript
+
+# backward compatibility for existing gentoo layout 
+#
+if [ -d "/var/lib/gtacoin/.gtacoin" ]; then
+	GTACOIND_DEFAULT_DATADIR="/var/lib/gtacoin/.gtacoin"
+else
+	GTACOIND_DEFAULT_DATADIR="/var/lib/gtacoind"
+fi
+
+GTACOIND_CONFIGFILE=${GTACOIND_CONFIGFILE:-/etc/gtacoin/gtacoin.conf}
+GTACOIND_PIDDIR=${GTACOIND_PIDDIR:-/var/run/gtacoind}
+GTACOIND_PIDFILE=${GTACOIND_PIDFILE:-${GTACOIND_PIDDIR}/gtacoind.pid}
+GTACOIND_DATADIR=${GTACOIND_DATADIR:-${GTACOIND_DEFAULT_DATADIR}}
+GTACOIND_USER=${GTACOIND_USER:-${GTACOIN_USER:-gtacoin}}
+GTACOIND_GROUP=${GTACOIND_GROUP:-gtacoin}
+GTACOIND_BIN=${GTACOIND_BIN:-/usr/bin/gtacoind}
+GTACOIND_NICE=${GTACOIND_NICE:-${NICELEVEL:-0}}
+GTACOIND_OPTS="${GTACOIND_OPTS:-${GTACOIN_OPTS}}"
+
+name="Gtacoin Core Daemon"
+description="Gtacoin cryptocurrency P2P network daemon"
+
+command="/usr/bin/gtacoind"
+command_args="-pid=\"${GTACOIND_PIDFILE}\" \
+		-conf=\"${GTACOIND_CONFIGFILE}\" \
+		-datadir=\"${GTACOIND_DATADIR}\" \
+		-daemon \
+		${GTACOIND_OPTS}"
+
+required_files="${GTACOIND_CONFIGFILE}"
+start_stop_daemon_args="-u ${GTACOIND_USER} \
+			-N ${GTACOIND_NICE} -w 2000"
+pidfile="${GTACOIND_PIDFILE}"
+
+# The retry schedule to use when stopping the daemon. Could be either
+# a timeout in seconds or multiple signal/timeout pairs (like
+# "SIGKILL/180 SIGTERM/300")
+retry="${GTACOIND_SIGTERM_TIMEOUT}"
+
+depend() {
+	need localmount net
+}
+
+# verify
+# 1) that the datadir exists and is writable (or create it)
+# 2) that a directory for the pid exists and is writable
+# 3) ownership and permissions on the config file
+start_pre() {
+	checkpath \
+	-d \
+	--mode 0750 \
+	--owner "${GTACOIND_USER}:${GTACOIND_GROUP}" \
+	"${GTACOIND_DATADIR}"
+
+	checkpath \
+	-d \
+	--mode 0755 \
+	--owner "${GTACOIND_USER}:${GTACOIND_GROUP}" \
+	"${GTACOIND_PIDDIR}"
+
+	checkpath -f \
+	-o ${GTACOIND_USER}:${GTACOIND_GROUP} \
+	-m 0660 \
+	${GTACOIND_CONFIGFILE}
+
+	checkconfig || return 1
+}
+
+checkconfig()
+{
+	if ! grep -qs '^rpcpassword=' "${GTACOIND_CONFIGFILE}" ; then
+		eerror ""
+		eerror "ERROR: You must set a secure rpcpassword to run gtacoind."
+		eerror "The setting must appear in ${GTACOIND_CONFIGFILE}"
+		eerror ""
+		eerror "This password is security critical to securing wallets "
+		eerror "and must not be the same as the rpcuser setting."
+		eerror "You can generate a suitable random password using the following"
+		eerror "command from the shell:"
+		eerror ""
+		eerror "bash -c 'tr -dc a-zA-Z0-9 < /dev/urandom | head -c32 && echo'"
+		eerror ""
+		eerror "It is also recommended that you also set alertnotify so you are "
+		eerror "notified of problems:"
+		eerror ""
+		eerror "ie: alertnotify=echo %%s | mail -s \"Gtacoin Alert\"" \
+			"admin@foo.com"
+		eerror ""
+		return 1
+	fi
+}

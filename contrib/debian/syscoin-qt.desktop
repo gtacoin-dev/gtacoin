@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Gtacoin Core
+Comment=Connect to the Gtacoin P2P Network
+Comment[de]=Verbinde mit dem Gtacoin peer-to-peer Netzwerk
+Comment[fr]=Gtacoin, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Gtacoin, eşten eşe kriptografik sanal para birimi
+Exec=gtacoin-qt %u
+Terminal=false
+Type=Application
+Icon=gtacoin128
+MimeType=x-scheme-handler/gtacoin;
+Categories=Office;Finance;

@@ -1,0 +1,33 @@
+# /etc/conf.d/gtacoind: config file for /etc/init.d/gtacoind
+
+# Config file location
+#GTACOIND_CONFIGFILE="/etc/gtacoin/gtacoin.conf"
+
+# What directory to write pidfile to?  (created and owned by $GTACOIND_USER)
+#GTACOIND_PIDDIR="/var/run/gtacoind"
+
+# What filename to give the pidfile
+#GTACOIND_PIDFILE="${GTACOIND_PIDDIR}/gtacoind.pid"
+
+# Where to write gtacoind data (be mindful that the blockchain is large)
+#GTACOIND_DATADIR="/var/lib/gtacoind"
+
+# User and group to own gtacoind process
+#GTACOIND_USER="gtacoin"
+#GTACOIND_GROUP="gtacoin"
+
+# Path to gtacoind executable
+#GTACOIND_BIN="/usr/bin/gtacoind"
+
+# Nice value to run gtacoind under
+#GTACOIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+GTACOIND_OPTS="-disablewallet"
+
+# The timeout in seconds OpenRC will wait for gtacoind to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+GTACOIND_SIGTERM_TIMEOUT=60

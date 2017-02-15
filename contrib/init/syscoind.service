@@ -1,0 +1,22 @@
+[Unit]
+Description=Gtacoin's distributed currency daemon
+After=network.target
+
+[Service]
+User=gtacoin
+Group=gtacoin
+
+Type=forking
+PIDFile=/var/lib/gtacoind/gtacoind.pid
+ExecStart=/usr/bin/gtacoind -daemon -pid=/var/lib/gtacoind/gtacoind.pid \
+-conf=/etc/gtacoin/gtacoin.conf -datadir=/var/lib/gtacoind -disablewallet
+
+Restart=always
+PrivateTmp=true
+TimeoutStopSec=60s
+TimeoutStartSec=2s
+StartLimitInterval=120s
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

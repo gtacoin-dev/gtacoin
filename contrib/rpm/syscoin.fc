@@ -1,0 +1,8 @@
+/usr/bin/gtacoin-cli		--	gen_context(system_u:object_r:gtacoin_exec_t,s0)
+/usr/sbin/gtacoind		--	gen_context(system_u:object_r:gtacoin_exec_t,s0)
+/usr/lib(64)?/gtacoin/gtacoind		--	gen_context(system_u:object_r:gtacoin_exec_t,s0)
+
+/etc/gtacoin(/.*)?		gen_context(system_u:object_r:gtacoin_conf_t,s0)
+/var/lib/gtacoin(/.*)?		gen_context(system_u:object_r:gtacoin_var_lib_t,s0)
+
+(/var)?/run/gtacoind(/.*)?   gen_context(system_u:object_r:gtacoin_var_run_t,s0)
